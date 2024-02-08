@@ -52,18 +52,19 @@ async function run() {
   checkActionVersion(getActionVersion(), gitHubVersion);
   console.log(`GitHub Enterprise Server type: ${gitHubVersion.type}`);
 
-  // if (
-  //   !(await sendStatusReport(
-  //     await createStatusReportBase(
-  //       "upload-sarif",
-  //       "starting",
-  //       startedAt,
-  //       await checkDiskUsage(),
-  //     ),
-  //   ))
-  // ) {
-  //   return;
-  // }
+  console.log("Create status report base");
+  const statusReportBase = await createStatusReportBase(
+    "upload-sarif",
+    "starting",
+    startedAt,
+    await checkDiskUsage(),
+  );
+
+  console.log("Send status report base");
+  if (!(await sendStatusReport(statusReportBase))) {
+    console.error("Failed to send status report");
+    return;
+  }
 
   try {
     console.log("Uploading SARIF file");
