@@ -44,11 +44,19 @@ async function sendSuccessStatusReport(
 
 async function run() {
   const startedAt = new Date();
+  console.log(`codeql/upload-sarif action`);
   const logger = getActionsLogger();
   initializeEnvironment(getActionVersion());
 
   const gitHubVersion = await getGitHubVersion();
   checkActionVersion(getActionVersion(), gitHubVersion);
+  console.log(
+    `GitHub Enterprise Server version: ${JSON.stringify(
+      gitHubVersion,
+      null,
+      2,
+    )}`,
+  );
 
   if (
     !(await sendStatusReport(
@@ -64,6 +72,12 @@ async function run() {
   }
 
   try {
+    console.log("Uploading SARIF file");
+    console.dir({
+      sarif_file: actionsUtil.getRequiredInput("sarif_file"),
+      checkout_path: actionsUtil.getRequiredInput("checkout_path"),
+      category: actionsUtil.getOptionalInput("category"),
+    });
     const uploadResult = await upload_lib.uploadFromActions(
       actionsUtil.getRequiredInput("sarif_file"),
       actionsUtil.getRequiredInput("checkout_path"),
@@ -85,6 +99,7 @@ async function run() {
     }
     await sendSuccessStatusReport(startedAt, uploadResult.statusReport);
   } catch (unwrappedError) {
+    console.error(unwrappedError);
     const error = wrapError(unwrappedError);
     const message = error.message;
     core.setFailed(message);
