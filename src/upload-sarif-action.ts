@@ -50,26 +50,20 @@ async function run() {
 
   const gitHubVersion = await getGitHubVersion();
   checkActionVersion(getActionVersion(), gitHubVersion);
-  console.log(
-    `GitHub Enterprise Server version: ${JSON.stringify(
-      gitHubVersion,
-      null,
-      2,
-    )}`,
-  );
+  console.log(`GitHub Enterprise Server type: ${gitHubVersion.type}`);
 
-  if (
-    !(await sendStatusReport(
-      await createStatusReportBase(
-        "upload-sarif",
-        "starting",
-        startedAt,
-        await checkDiskUsage(),
-      ),
-    ))
-  ) {
-    return;
-  }
+  // if (
+  //   !(await sendStatusReport(
+  //     await createStatusReportBase(
+  //       "upload-sarif",
+  //       "starting",
+  //       startedAt,
+  //       await checkDiskUsage(),
+  //     ),
+  //   ))
+  // ) {
+  //   return;
+  // }
 
   try {
     console.log("Uploading SARIF file");
